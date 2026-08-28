@@ -1,0 +1,61 @@
+# Prepare by loading packages
+library(GenomicFeatures)
+library(tximport)
+library(AnnotationDbi)
+library(biomaRt)
+library(tibble)
+
+$GTF = ROS_CFam_1.0.gtf
+
+# GTF loading
+txdb <- makeTxDbFromGFF("{$GTF}", format="gtf")
+
+# transcript-to-gene mapping
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, keys = k, columns = "GENEID", keytype = "TXNAME")
+
+txi <- tximport(file_path, type = "salmon", tx2gene = tx2gene, countsFromAbundance = "lengthScaledTPM", ignoreTxVersion = TRUE)
+tpm <- txi$abundance
+
+maRt <- useEnsembl(
+  biomart = "genes",
+  dataset = "clfamiliaris_gene_ensembl",
+  version = 114
+)
+
+converted <- getBM(
+  attributes = c("ensembl_gene_id", "hsapiens_homolog_associated_gene_name"),
+  filters = "ensembl_gene_id",
+  values = unique(tx2gene$GENEID),
+  mart = maRt
+)
+
+# filling missing index
+missing_idx <- which(is.na(converted$hsapiens_homolog_associated_gene_name) | converted$hsapiens_homolog_associated_gene_name == "")
+converted$hsapiens_homolog_associated_gene_name[missing_idx] <- converted$ensembl_gene_id[missing_idx]
+
+# naming the TPM by Gene Symbol
+symvec <- setNames(converted$hsapiens_homolog_associated_gene_name, converted$ensembl_gene_id)
+train_df <- data.frame(
+  GeneID=rownames(tpm),
+  Symbol=symvec[rownames(tpm)],
+  tpm,
+  check.names=FALSE
+)
+
+# Log2 transform
+sample_cols <- setdiff(names(train_df),
+              c("GeneID", "Symbol")
+)
+
+train_df_log <- train_df %>%
+  mutate(across(all_of(sample_cols), ~ log2(.x+1)))
+
+# Median collapsing by gene symbol
+train_mat <- train_df_log %>%
+  group_by(Symbol) %>%
+  summarise(across(where(is.numeric), ~ median(.x, na.rm=TRUE)),
+      .groups="drop")%>%
+  tibble::column_to_rownames("Symbol") %>%
+  as.matrix()
+
