@@ -18,6 +18,8 @@ available repositories as described in the manuscript.
 ## Analysis workflow
 
 1. RNA-seq transcript quantification using Salmon (Training cohort)
+- Salmon index was built using Ensembl release 114
+  Canis lupus familiaris ROS_Cfam_1.0 cdna FASTA.
 2. Gene-level summarizaiton using tximport (Training cohort)
 3. Annotating canine microarray probes using canine2.db (Evaluation cohort)
 4. Canine-to-human ortholog mapping (Both cohort)
