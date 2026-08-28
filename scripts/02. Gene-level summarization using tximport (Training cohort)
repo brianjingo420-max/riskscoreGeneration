@@ -5,10 +5,10 @@ library(AnnotationDbi)
 library(biomaRt)
 library(tibble)
 
-$GTF = ROS_CFam_1.0.gtf
+GTF <- "ROS_CFam_1.0.gtf"
 
 # GTF loading
-txdb <- makeTxDbFromGFF("{$GTF}", format="gtf")
+txdb <- makeTxDbFromGFF(GTF, format="gtf")
 
 # transcript-to-gene mapping
 k <- keys(txdb, keytype = "TXNAME")
@@ -54,7 +54,7 @@ train_df_log <- train_df %>%
 # Median collapsing by gene symbol
 train_mat <- train_df_log %>%
   group_by(Symbol) %>%
-  summarise(across(where(is.numeric), ~ median(.x, na.rm=TRUE)),
+  summarise(across(all_of(sample_cols), ~ median(.x, na.rm=TRUE)),
       .groups="drop")%>%
   tibble::column_to_rownames("Symbol") %>%
   as.matrix()
