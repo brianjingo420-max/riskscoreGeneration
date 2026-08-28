@@ -1,0 +1,13 @@
+library(GSVA)
+
+Hallmark <- msigdbr(species="Homo sapiens", category="H") %>%
+  split(x=.$gene_symbol, f=.$gs_name)
+
+C2 <- msigdbr(species="Homo sapiens", category="C2") %>%
+  split(x=.$gene_symbol, f=.$gs_name)
+
+C5 <- msigdbr(species="Homo sapiens", category="C5") %>%
+  split(x=.$gene_symbol, f=.$gs_name)
+
+pathways_H25 <- c(Hallmark, C2, C5)
+
