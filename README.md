@@ -19,9 +19,9 @@ available repositories as described in the manuscript.
 
 1. RNA-seq transcript quantification using Salmon (Training cohort)
 2. Gene-level summarizaiton using tximport (Training cohort)
-3. Annotating canine microarray probes using canine2.db (evaluation cohort)
-4. Canine-to-human ortholog mapping (both cohort)
-5. ssGSEA (both cohort)
+3. Annotating canine microarray probes using canine2.db (Evaluation cohort)
+4. Canine-to-human ortholog mapping (Both cohort)
+5. ssGSEA (Both cohort)
 6. Univariable gene-set screening (Training cohort)
 7. LASSO model development (Training cohort)
 8. Bootstrap internal validation (Training cohort)
