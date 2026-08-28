@@ -3,6 +3,7 @@
 library(canine2.db)
 library(AnnotationDbi)
 library(dplyr)
+library(biomaRt)
 
 # sample columns
 sample_cols2 <- setdiff(names(CMC_matrix), "ID_REF")
@@ -22,7 +23,9 @@ dog_df <- data.frame(
   ensembl_gene_id = as.character(dog_ensembl),
   stringsAsFactors=FALSE
   ) %>%
-    filter(!is.na(ensembl_gene_id) & ensembl_gene_id != "")
+    filter(!is.na(ensembl_gene_id), 
+    ensembl_gene_id != ""
+)
     
 # Canine Ensembl to human homolog
 map_df <- getBM(
@@ -35,11 +38,14 @@ map_df <- getBM(
     mart = maRt
     )
 
-anno1 <- dog_df %>%
-  inner_join(map_df, by = "ensembl_gene_id") %>%
+map_df <- map_df %>%
   filter(
-    !is.na(hsapiens_homolog_associated_gene_name),
-    hsapiens_homolog_associated_gene_name != ""
+  !is.na(hsapiens_homolog_associated_gene_name),
+  hsapiens_homolog_associated_gene_name != ""
+)
+
+anno1 <- dog_df %>%
+  inner_join(map_df, by = "ensembl_gene_id"
   ) %>%
   distinct(ID_REF, hsapiens_homolog_associated_gene_name)
 
@@ -50,12 +56,15 @@ eval_df <- CMC_matrix %>%
 # Collapsing multiple probes to human gene symbol by median
 eval_df_med <- eval_df %>%
     group_by(hsapiens_homolog_associated_gene_name) %>%
-    summarise(across(sample_cols2), median, na.rm = TRUE),
+    summarise(across(all_of(sample_cols2), median, na.rm = TRUE)),
               .groups="drop"
   )
 
-# final matrix
-eval_mat <- as.matrix(eval_df_med[, sample_cols2])
-rownames(eval_mat) <- eval_df_med$hsapiens_homolog_associated_gene_name
+# Final matrix
+eval_mat <- eval_df_med %>%
+  tibble::column_to_rownames(
+  "hsapiens_homolog_associated_gene_name"
+) %>%
+as.matrix()
 
     
