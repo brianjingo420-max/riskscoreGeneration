@@ -33,9 +33,11 @@ converted <- getBM(
   mart = maRt
 )
 
-# filling missing index
-missing_idx <- which(is.na(converted$hsapiens_homolog_associated_gene_name) | converted$hsapiens_homolog_associated_gene_name == "")
-converted$hsapiens_homolog_associated_gene_name[missing_idx] <- converted$ensembl_gene_id[missing_idx]
+converted <- converted %>%
+  filter(
+  !is.na(hsapiens_homolog_associated_gene_name),
+  hsapiens_homolog_associated_gene_name != ""
+)
 
 # Mapping vector
 symvec <- setNames(converted$hsapiens_homolog_associated_gene_name, converted$ensembl_gene_id)
@@ -46,7 +48,8 @@ train_df <- data.frame(
   Symbol=symvec[rownames(tpm)],
   tpm,
   check.names=FALSE
-)
+) %>%
+  filter(!is.na(Symbol), Symbol != "")
 
 # Identify expression columns
 sample_cols <- setdiff(names(train_df),
