@@ -10,19 +10,22 @@ GTF <- "ROS_CFam_1.0.gtf"
 # GTF loading
 txdb <- makeTxDbFromGFF(GTF, format="gtf")
 
-# transcript-to-gene mapping
+# Transcript-to-gene mapping
 k <- keys(txdb, keytype = "TXNAME")
 tx2gene <- select(txdb, keys = k, columns = "GENEID", keytype = "TXNAME")
 
+# Salmon to gene-level TPM
 txi <- tximport(file_path, type = "salmon", tx2gene = tx2gene, countsFromAbundance = "lengthScaledTPM", ignoreTxVersion = TRUE)
 tpm <- txi$abundance
 
+# Ensembl BioMart
 maRt <- useEnsembl(
   biomart = "genes",
   dataset = "clfamiliaris_gene_ensembl",
   version = 114
 )
 
+# Canine Ensembl gene to human ortholog mapping
 converted <- getBM(
   attributes = c("ensembl_gene_id", "hsapiens_homolog_associated_gene_name"),
   filters = "ensembl_gene_id",
@@ -34,8 +37,10 @@ converted <- getBM(
 missing_idx <- which(is.na(converted$hsapiens_homolog_associated_gene_name) | converted$hsapiens_homolog_associated_gene_name == "")
 converted$hsapiens_homolog_associated_gene_name[missing_idx] <- converted$ensembl_gene_id[missing_idx]
 
-# naming the TPM by Gene Symbol
+# Mapping vector
 symvec <- setNames(converted$hsapiens_homolog_associated_gene_name, converted$ensembl_gene_id)
+
+# TPM dataframe
 train_df <- data.frame(
   GeneID=rownames(tpm),
   Symbol=symvec[rownames(tpm)],
@@ -43,15 +48,16 @@ train_df <- data.frame(
   check.names=FALSE
 )
 
-# Log2 transform
+# Identify expression columns
 sample_cols <- setdiff(names(train_df),
               c("GeneID", "Symbol")
 )
 
+# log2(TPM+1)
 train_df_log <- train_df %>%
   mutate(across(all_of(sample_cols), ~ log2(.x+1)))
 
-# Median collapsing by gene symbol
+# Median collapsing by mapped gene
 train_mat <- train_df_log %>%
   group_by(Symbol) %>%
   summarise(across(all_of(sample_cols), ~ median(.x, na.rm=TRUE)),
