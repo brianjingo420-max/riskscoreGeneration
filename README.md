@@ -9,7 +9,7 @@ GEO accession number \
 Training cohort:
 GSE119810
 
-Evaluation:
+Evaluation cohort:
 GSE20718
 
 Raw and processed expression data were obtained from publicly
