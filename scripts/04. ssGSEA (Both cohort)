@@ -10,4 +10,93 @@ C5 <- msigdbr(species="Homo sapiens", category="C5") %>%
   split(x=.$gene_symbol, f=.$gs_name)
 
 pathways_H25 <- c(Hallmark, C2, C5)
+pathways_H25_train <- lapply(pathways_H25, function(v) intersect(v, rownames(train_mat)))
+pathways_H25_eval <- lapply(pathways_H25, function(v) intersect(v, rownames(eval_mat)))
+pathways_H25_common <- map2(pathways_H25_train, pathways_H25_eval, intersect)
+
+#
+param_H25_train_common <- ssgseaParam(
+  exprData = train_mat,
+  geneSets = pathways_H25_common,
+  minSize = 10,
+  maxSize = 500,
+  alpha = 0.25,
+  normalize = FALSE)
+
+raw_train_common <- gsva(param_H25_train_common, verbose=FALSE)
+z_train <- t(scale(t(raw_train_common)))
+
+#
+param_H25_eval_common <- ssgseaParam(
+  exprData = eval_mat,
+  geneSets = pathways_H25_common,
+  minSize = 10,
+  maxSize = 500,
+  alpha = 0.25,
+  normalize = FALSE)
+
+raw_eval_common <- gsva(param_H25_eval_common, verbose=FALSE)
+z_eval <- t(scale(t(raw_eval_common)))
+
+
+#
+meta_tr
+group_tr <- ifelse(meta_tr$Metastasis == 1, "Invasion", "No invasion")
+names(group_tr) <- colnames(train_mat)
+
+train_common <- intersect(colnames(z_train), names(group_tr))
+y_tr <- as.integer(group_tr[train_common] == "Invasion")
+
+univ_logit <- function(x, y){
+  x <- as.numeric(x)
+  ok <- is.finite(x) & !is.na(y)
+  x <- x[ok]; yy <- y[ok]
+  if(length(unique(yy)) <2) return(NULL)
+
+  fit <- glm(yy~x, family = binomial())
+  s <- summary(fit)$coefficients
+
+  beta <- unname(coef(fit)["x"])
+  se <- s["x", "Std.Error"]
+  p <- s["x", "Pr(>|z|)"]
+
+  data.frame(
+    beta=beta,
+    OR=exp(beta),
+    SE=se
+    CI_low=exp(beta-1.96*se),
+    CI_high=exp(beta+1.96*se),
+    p=p,
+    n=length(yy)
+  )
+}
+
+res_list_common <- lapply(rownames(z_train), function(pw) univ_logit(z_train[pw, ], y))
+names(res_list_common) <- rownames(z_train)
+
+res <- do.call(rbind, res_list_common)
+res$pathway <- rownames(res)
+rownames(res) <- NULL
+
+res$FDR <- p.adjust(res$p, method = "BH")
+res <- res[order(res$FDR, res$p), ]
+
+#
+table_z_train <- res %>%
+  dplyr::arange(FDR, p) %>%
+  dplyr::mutate(
+    OR_CI = sprintf("%.2f (%.2f-%.2f)", OR, CI_low, CI_high),
+    p_fmt = format.pval(p, digits = 3, eps = 1e-16)
+    FDR_fmt = format.pval(FDR, digits =3, eps=1e-16)
+  ) %>%
+  dplyr::select(pathway, n, beta, OR_CI, SE, p_fmt, FDR_fmt) %>%
+  dplyr::rename(
+    Pathway = pathway,
+    N = n,
+    Beta = beta,
+    'OR (95% CI)' = OR_CI,
+    p = p_fmt,
+    'FDR (BH)' = FDR_fmt
+)
+
 
