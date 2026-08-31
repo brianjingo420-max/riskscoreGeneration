@@ -63,7 +63,7 @@ univ_logit <- function(x, y){
   data.frame(
     beta=beta,
     OR=exp(beta),
-    SE=se
+    SE=se,
     CI_low=exp(beta-1.96*se),
     CI_high=exp(beta+1.96*se),
     p=p,
