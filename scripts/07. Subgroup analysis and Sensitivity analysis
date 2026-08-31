@@ -83,6 +83,114 @@ library(rstatix)
       )
     )
 
-  ## H. 
+  ## H. Exploratory statistical evaluation
+  stat_subgroup <- df_rs_subgroup %>%
+    group_by(Subgroup) %>%
+    wilcox_test(RS ~ Outcome) %>%
+    ungroup() %>%
+    mutate(
+      p.adj = p,
+      is_subgroup=Subgroup != "All training tumors"
+    )
 
+    stat_subgroup$p.adj[stat_subgroup$is_subgroup] <-
+      p.adjust(
+        stat_subgroup$p[stat_subgroup$is_subgroup],
+        method="BH"
+      )
 
+  fmt_p <- function(x) {
+    ifelse(
+      x < 0.001,
+      formatC(x, format="e", digits=2),
+      formatC(x, format="f", digits=3)
+    )
+  }
+
+  stat_subgroup <- stat_subgroup %>%
+    mutate(
+      p.label = case_when(
+        Subgroup=="All training tumors" ~
+          paste0(
+            "P = ",
+            fmt_p(p)
+          ),
+
+        TRUE ~
+          paste0(
+            "BH-adjusted P = ",
+            fmt_p(p.adj)
+          )
+      )
+    ) %>%%
+    add_xy_position(
+      x="Outcome",
+      fun="max"
+    ) %>%
+    mutate(
+      y.position=y.position+0.09
+    )
+
+  df_rs_subgroup <- df_rs_subgroup %>%
+    filter(
+      !is.na(RS),
+      !is.na(Outcome)
+    ) %>%
+    group_by(Subgroup, Outcome) %>%
+    mutate(
+      n_group =n(),
+      Outcome_n=paste0(
+        as.character(Outcome),
+        "\n(n = ", n_group, " )"
+      )
+    ) %>%
+    ungroup()
+
+  subgroup_levels <- c(
+    "All training tumors",
+    "Simple carcinoma",
+    "Grade 2-3",
+    "Grade 3"
+  )
+
+  df_rs_subgroup <- df_rs_subgroup %>%
+    mutate(
+      Subgroup=factor(
+        Subgroup,
+        levels=subgroup_levels
+      ),
+      Outcome=factor(
+        Outcome,
+        levels=c("Spread-", "Spread+")
+      ),
+
+      Outcome_plot=paste0(
+        as.character(Subgroup),
+        "___",
+        as.character(Outcome),
+        "\n(n= ", n_group, " )"
+      )
+    )
+  
+  outcome_plot_levels <- df_rs_subgroup %>%
+    distinct(Subgroup, Outcome, Outcome_plot) %>%
+    arrange(Subgroup, Outcome) %>%
+    pull(Outcome_plot)
+
+  df_rs_subgroup <- df_rs_subgroup %>%
+    mutate(
+      Outcome_plot = factor(
+        Outcome_plot,
+        levels=outcome_plot_levels
+      )
+    )
+
+  stat_subgroup_plot <- stat_subgroup %>%
+    mutate(
+      Subgroup=factor(
+        Subgroup,
+        levels=subgroup_levels
+      ),
+      xmin=1,
+      xmax=2
+    )
