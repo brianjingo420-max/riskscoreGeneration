@@ -43,5 +43,41 @@ while(b < B){
   # low positive value compensation
   if(min(tab[, "1"]) < 2) next
 
-cv1 <- glmnet(
-  X_tr, y_tr
+  cv1 <- glmnet(
+    X_tr, y_tr,
+    family = "binomial",
+    alpha = 1,
+    foldid = foldid,
+    keep = TRUE,
+    maxit = 1e6,
+    lambda.min.ratio = 0.01
+    standardize = TRUE,
+    type.measure = "deviance"
+  )
+
+  idx <-b + 1
+  cv1_list[idx]] <- cv1
+  lam1[idx] <- cv1$lambda.1se
+  lammin1[idx] <- cv1$lambda.min
+
+  coef1 <- as.matrix(coef(cv1, s = "lambda.1se"))
+  sel1[[idx]] <- setdiff(
+    rownames(coef1)[coef1[, 1] != 0],
+    "(Intercept)"
+  )
+
+  b <- b + 1
+}
+
+# representative selection by minimizing the residual
+median_log_lam1 <- median(log(lam1))
+
+representative_idx1 <- which.min(
+  abs(log(lam1) - median_log_lam1)
+)
+
+cv1_representative <- cv1_list[[representative_idx1]]
+cv1_representative$lambda.1se
+median(lam1)
+
+
