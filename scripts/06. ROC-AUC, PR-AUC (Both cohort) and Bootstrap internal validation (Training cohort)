@@ -1,0 +1,9 @@
+
+
+# Bootstrap optimism correction for LASSO model
+# Conditional on 7 curated gene-set predictors
+
+Xtr <- as.matrix(X_tr)
+
+y <- y_tr
+
