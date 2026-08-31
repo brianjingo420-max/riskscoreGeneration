@@ -86,7 +86,7 @@ table_z_train <- res %>%
   dplyr::arange(FDR, p) %>%
   dplyr::mutate(
     OR_CI = sprintf("%.2f (%.2f-%.2f)", OR, CI_low, CI_high),
-    p_fmt = format.pval(p, digits = 3, eps = 1e-16)
+    p_fmt = format.pval(p, digits = 3, eps = 1e-16),
     FDR_fmt = format.pval(FDR, digits =3, eps=1e-16)
   ) %>%
   dplyr::select(pathway, n, beta, OR_CI, SE, p_fmt, FDR_fmt) %>%
