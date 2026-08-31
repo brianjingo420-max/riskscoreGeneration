@@ -77,7 +77,22 @@ representative_idx1 <- which.min(
 )
 
 cv1_representative <- cv1_list[[representative_idx1]]
+
+# Confirm if two values are identical
 cv1_representative$lambda.1se
 median(lam1)
 
+# final fit selection
+final_lambda1 <- median(lam1)
 
+final_fit1 <- glmnet(
+  X_tr,
+  y_tr,
+  family = "binomial",
+  alpha = 1,
+  lambda = final_lambda1,
+  standardize=TRUE,
+  maxit = 1e6
+)
+
+coef(final_fit1, s=final_lambda1)
