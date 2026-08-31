@@ -1,0 +1,47 @@
+library(caret)
+library(dplyr)
+
+# Selected 7 gene sets by manual curation
+sel7 <- c(
+  "KEGG_CELL_CYCLE",
+  "GOBP_NEGATIVE_REGULATION_OF_NATURAL_KILLER_CELL_MEDIATED_IMMUNITY",
+    "VANTVEER_BREAST_CANCER_METASTASIS_DN",
+  "RHODES_UNDIFFERENTIATED_CANCER",
+  "GOBP_TELOMERE_MAINTENANCE_VIA_RECOMBINATION",
+  "GOBP_POSITIVE_REGULATION_OF_VASCULAR_PERMEABILITY",
+  "REACTOME_CELLULAR_RESPONSE_TO_HYPOXIA"
+)
+
+#
+common_tr <- intersect(colnames(z_train), names(group_tr))
+
+X_tr <- t(z_train[sel7, common_tr, drop=FALSE])
+
+# ML setting
+B <- 100
+K <- 5
+b <- 0
+tries <- 0
+
+# Object designation
+cv1_list <- vector("list", B)
+lam1 <- numeric(B)
+lammin1 <- numeric(B)
+sel1 <- vector("list", B)
+
+# ML
+while(b < B){
+  tries <- tries + 1
+  set.seed(10000+tries)
+
+  y_fac <- factor(y, levels=c(0,1), labels=c("No","Yes"))
+  folds <- creadFolds(y_fac, k=K, list=TRUE, returnTrain=FALSE)
+  foldid <- integer(length(y))
+  for(i in 1:K) foldid[folds[[i]]] <- i
+
+  tab <- table(foldid, y)
+  # low positive value compensation
+  if(min(tab[, "1"]) < 2) next
+
+cv1 <- glmnet(
+  X_tr, y_tr
