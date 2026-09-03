@@ -7,6 +7,7 @@ lp_tr <- as.numeric(predict(final_fit1, newx=X_tr, type="link"))
 
 roc_obj_tr <- roc(y_tr, lp_tr)
 app_auc_tr <- as.numeric(pROC::auc(roc_obj_tr))
+ci_ROC_tr <- pROC::ci.auc(roc_obj_tr)
 
 # PR-AUC calculation
 df_pr_tr <- data.frame(
@@ -34,38 +35,24 @@ ev_tr <- evalmod(
   mode = "prc"
 )
 
-prauc_tr <- as.data.frame(precrec::auc(ev_tr))
+auc_tr <- as.data.frame(precrec::auc(ev_tr))
+curve_col_auc_tr <- if ("curvetypes" %in% names(auc_tr)) {
+  "curvetypes"
+} else if ("curvetype" %in% names(auc_tr)) {
+  "curvetype"
+} else {
+  NA_character_
+}
+
+if (!is.na(curve_col_auc_tr)) {
+  pr_auc_tr <- auc_tr$aucs[
+    toupper(auc_tr[[curve_col_auc_tr]]) == "PRC"
+  ][1]
+} else {
+  pr_auc_tr <- auc_tr$aucs[1]
+}
 
 ## Same workflow as above is repeated for evaluation cohort
-group_ev <- ifelse(meta_ev$LN_invasion==1, "Invasion", "No invasion")
-names(group_ev) <- colnames(eval_mat)
-
-eval_common <- intersect(colnames(z_eval), names(group_ev))
-y_ev <- as.integer(group_ev[eval_common] == "Invasion")
-
-X_ev <- t(z_eval[sel7, eval_common, drop=FALSE])
-
-lp_ev <- as.numeric(
-  predict(final_fit1, newx=X_ev, type="link")
-)
-
-roc_obj_ev <- roc(y_ev, lp_ev, ci = TRUE, quiet = TRUE)
-auc_ev <- as.numeric(pROC::auc(roc_obj_ev))
-ci_ev <- pROC::ci.auc(roc_obj_ev)
-
-# PR-AUC
-mm_ev <- mmdata(
-  scores = lp_ev,
-  labels = y_ev,
-  modnames="Transcriptomic risk score"
-)
-
-ev_ev <- evalmod(
-  mm_ev,
-  mode = "prc"
-)
-
-prauc_ev <- as.data.frame(precrec::auc(ev_ev))
 
 # Bootstrap optimism correction for LASSO model
 # Conditional on 7 curated gene-set predictors
