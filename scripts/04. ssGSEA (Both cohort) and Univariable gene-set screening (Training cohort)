@@ -40,7 +40,7 @@ z_eval <- t(scale(t(raw_eval_common)))
 
 
 #
-meta_tr
+meta_tr  # Metadata of Training cohort
 group_tr <- ifelse(meta_tr$Metastasis == 1, "Invasion", "No invasion")
 names(group_tr) <- colnames(train_mat)
 
@@ -71,7 +71,7 @@ univ_logit <- function(x, y){
   )
 }
 
-res_list_common <- lapply(rownames(z_train), function(pw) univ_logit(z_train[pw, ], y))
+res_list_common <- lapply(rownames(z_train), function(pw) univ_logit(z_train[pw, ], y_tr))
 names(res_list_common) <- rownames(z_train)
 
 res <- do.call(rbind, res_list_common)
@@ -83,7 +83,7 @@ res <- res[order(res$FDR, res$p), ]
 
 #
 table_z_train <- res %>%
-  dplyr::arange(FDR, p) %>%
+  dplyr::arrange(FDR, p) %>%
   dplyr::mutate(
     OR_CI = sprintf("%.2f (%.2f-%.2f)", OR, CI_low, CI_high),
     p_fmt = format.pval(p, digits = 3, eps = 1e-16),
@@ -98,5 +98,3 @@ table_z_train <- res %>%
     p = p_fmt,
     'FDR (BH)' = FDR_fmt
 )
-
-
