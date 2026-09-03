@@ -4,7 +4,7 @@ library(rstatix)
   idx_g23 <- meta_tr$Grade %in% c(2,3)
   ## B. Simple carcinoma
   idx_simple <- grepl(
-    "%Simple",
+    "^Simple",
     meta_tr$Histology,
     ignore.case=TRUE
   )
@@ -85,12 +85,12 @@ library(rstatix)
 
   ## H. Exploratory statistical evaluation
   stat_subgroup <- df_rs_subgroup %>%
-    group_by(Subgroup) %>%
+    group_by(subgroup) %>%
     wilcox_test(RS ~ Outcome) %>%
     ungroup() %>%
     mutate(
       p.adj = p,
-      is_subgroup=Subgroup != "All training tumors"
+      is_subgroup=subgroup != "All training tumors"
     )
 
     stat_subgroup$p.adj[stat_subgroup$is_subgroup] <-
@@ -110,7 +110,7 @@ library(rstatix)
   stat_subgroup <- stat_subgroup %>%
     mutate(
       p.label = case_when(
-        Subgroup=="All training tumors" ~
+        subgroup=="All training tumors" ~
           paste0(
             "P = ",
             fmt_p(p)
@@ -122,7 +122,7 @@ library(rstatix)
             fmt_p(p.adj)
           )
       )
-    ) %>%%
+    ) %>%
     add_xy_position(
       x="Outcome",
       fun="max"
@@ -136,7 +136,7 @@ library(rstatix)
       !is.na(RS),
       !is.na(Outcome)
     ) %>%
-    group_by(Subgroup, Outcome) %>%
+    group_by(subgroup, Outcome) %>%
     mutate(
       n_group =n(),
       Outcome_n=paste0(
@@ -155,8 +155,8 @@ library(rstatix)
 
   df_rs_subgroup <- df_rs_subgroup %>%
     mutate(
-      Subgroup=factor(
-        Subgroup,
+      subgroup=factor(
+        subgroup,
         levels=subgroup_levels
       ),
       Outcome=factor(
@@ -165,7 +165,7 @@ library(rstatix)
       ),
 
       Outcome_plot=paste0(
-        as.character(Subgroup),
+        as.character(subgroup),
         "___",
         as.character(Outcome),
         "\n(n= ", n_group, " )"
@@ -173,8 +173,8 @@ library(rstatix)
     )
   
   outcome_plot_levels <- df_rs_subgroup %>%
-    distinct(Subgroup, Outcome, Outcome_plot) %>%
-    arrange(Subgroup, Outcome) %>%
+    distinct(subgroup, Outcome, Outcome_plot) %>%
+    arrange(subgroup, Outcome) %>%
     pull(Outcome_plot)
 
   df_rs_subgroup <- df_rs_subgroup %>%
@@ -187,8 +187,8 @@ library(rstatix)
 
   stat_subgroup_plot <- stat_subgroup %>%
     mutate(
-      Subgroup=factor(
-        Subgroup,
+      subgroup=factor(
+        subgroup,
         levels=subgroup_levels
       ),
       xmin=1,
