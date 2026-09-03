@@ -1,5 +1,4 @@
 library(caret)
-library(dplyr)
 
 # Selected 7 gene sets by manual curation
 sel7 <- c(
@@ -12,10 +11,7 @@ sel7 <- c(
   "REACTOME_CELLULAR_RESPONSE_TO_HYPOXIA"
 )
 
-#
-common_tr <- intersect(colnames(z_train), names(group_tr))
-
-X_tr <- t(z_train[sel7, common_tr, drop=FALSE])
+X_tr <- t(z_train[sel7, train_common, drop=FALSE])
 
 # ML setting
 B <- 100
@@ -34,29 +30,29 @@ while(b < B){
   tries <- tries + 1
   set.seed(10000+tries)
 
-  y_fac <- factor(y, levels=c(0,1), labels=c("No","Yes"))
-  folds <- creadFolds(y_fac, k=K, list=TRUE, returnTrain=FALSE)
-  foldid <- integer(length(y))
+  y_fac <- factor(y_tr, levels=c(0,1), labels=c("No","Yes"))
+  folds <- createFolds(y_fac, k=K, list=TRUE, returnTrain=FALSE)
+  foldid <- integer(length(y_tr))
   for(i in 1:K) foldid[folds[[i]]] <- i
 
-  tab <- table(foldid, y)
+  tab <- table(foldid, y_tr)
   # low positive value compensation
   if(min(tab[, "1"]) < 2) next
 
-  cv1 <- glmnet(
-    X_tr, y_tr,
-    family = "binomial",
+cv1 <- cv.glmnet(
+  X_tr, y_tr,
+   family = "binomial",
     alpha = 1,
     foldid = foldid,
     keep = TRUE,
     maxit = 1e6,
-    lambda.min.ratio = 0.01
+    lambda.min.ratio = 0.01,
     standardize = TRUE,
     type.measure = "deviance"
   )
 
   idx <-b + 1
-  cv1_list[idx]] <- cv1
+  cv1_list[[idx]] <- cv1
   lam1[idx] <- cv1$lambda.1se
   lammin1[idx] <- cv1$lambda.min
 
@@ -77,8 +73,6 @@ representative_idx1 <- which.min(
 )
 
 cv1_representative <- cv1_list[[representative_idx1]]
-
-# Confirm if two values are identical
 cv1_representative$lambda.1se
 median(lam1)
 
