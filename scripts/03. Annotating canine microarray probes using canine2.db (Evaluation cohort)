@@ -2,7 +2,6 @@
   expression matrix : CMC_matrix
 library(canine2.db)
 library(AnnotationDbi)
-library(dplyr)
 library(biomaRt)
 
 # sample columns
@@ -66,5 +65,3 @@ eval_mat <- eval_df_med %>%
   "hsapiens_homolog_associated_gene_name"
 ) %>%
 as.matrix()
-
-    
