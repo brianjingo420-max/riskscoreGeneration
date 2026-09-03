@@ -1,5 +1,5 @@
 # Datasource : GSE20718
-  expression matrix : CMC_matrix
+#  expression matrix : CMC_matrix
 library(canine2.db)
 library(AnnotationDbi)
 library(biomaRt)
