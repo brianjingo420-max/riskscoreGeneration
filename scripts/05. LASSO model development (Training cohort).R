@@ -1,4 +1,5 @@
 library(caret)
+library(glmnet)
 
 # Selected 7 gene sets by manual curation
 sel7 <- c(
