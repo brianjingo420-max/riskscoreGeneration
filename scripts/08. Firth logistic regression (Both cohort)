@@ -1,8 +1,10 @@
-library(dplyr)
+# Firth logist regression
 library(logistf)
-
 df_train_model <- data.frame(
-  Sample_ID = meta_tr$Grade,
+  Sample_ID = meta_tr$Sample_ID,
+  Outcome = as.integer(y_tr),
+  RS = as.numeric(lp_tr),
+  Grade = meta_tr$Grade,
   ER = meta_tr$ER_status,
   Neuter = meta_tr$Neuter_status,
   Age = meta_tr$Age_yrs
