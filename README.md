@@ -29,6 +29,6 @@ available repositories as described in the manuscript.
 8. Firth logistic regression (Both cohort)
 
 ## Software
-R version 4.3.1
+R version 4.4.3
 
 package versions are provided in sessinoInfo.txt.
