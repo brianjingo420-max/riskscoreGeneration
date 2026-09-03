@@ -4,6 +4,9 @@ library(tximport)
 library(AnnotationDbi)
 library(biomaRt)
 library(tibble)
+library(dplyr)
+library(msigdbr)
+library(purrr)
 
 GTF <- "ROS_CFam_1.0.gtf"
 
@@ -67,4 +70,3 @@ train_mat <- train_df_log %>%
       .groups="drop")%>%
   tibble::column_to_rownames("Symbol") %>%
   as.matrix()
-
