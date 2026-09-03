@@ -54,53 +54,53 @@ if (!is.na(curve_col_auc_tr)) {
 
 ## Same workflow as above is repeated for evaluation cohort
 # apparent ROC-AUC calculation
-lp_val <- as.numeric(predict(final_fit1, newx=X_ev, type="link"))
+lp_ev <- as.numeric(predict(final_fit1, newx=X_ev, type="link"))
 
-roc_obj_tr <- roc(y_tr, lp_tr)
-app_auc_tr <- as.numeric(pROC::auc(roc_obj_tr))
-ci_ROC_tr <- pROC::ci.auc(roc_obj_tr)
+roc_obj_ev <- roc(y_ev, lp_ev)
+ROC_auc_ev <- as.numeric(pROC::auc(roc_obj_ev))
+ci_ROC_ev <- pROC::ci.auc(roc_obj_ev)
 
 # PR-AUC calculation
-df_pr_tr <- data.frame(
-  score=as.numeric(lp_tr),
-  label=as.integer(y_tr)
+df_pr_ev <- data.frame(
+  score=as.numeric(lp_ev),
+  label=as.integer(y_ev)
 ) %>%
   filter(
   !is.na(score),
   !is.na(label)
 )
 
-score_tr <- df_pr_tr$score
-y_pr_tr <- df_pr_tr$label
-pr_baseline_tr <- mean(y_pr_tr==1)
+score_ev <- df_pr_ev$score
+y_pr_ev <- df_pr_ev$label
+pr_baseline_ev <- mean(y_pr_ev==1)
 
 # PR curve
-mm_tr <- mmdata(
-  scores = score_tr,
-  labels = y_pr_tr,
+mm_ev <- mmdata(
+  scores = score_ev,
+  labels = y_pr_ev,
   modnames="Transcriptomic risk score"
 )
 
-ev_tr <- evalmod(
-  mm_tr,
+ev_ev <- evalmod(
+  mm_ev,
   mode = "prc"
 )
 
-auc_tr <- as.data.frame(precrec::auc(ev_tr))
-curve_col_auc_tr <- if ("curvetypes" %in% names(auc_tr)) {
+auc_ev <- as.data.frame(precrec::auc(ev_ev))
+curve_col_auc_ev <- if ("curvetypes" %in% names(auc_ev)) {
   "curvetypes"
-} else if ("curvetype" %in% names(auc_tr)) {
+} else if ("curvetype" %in% names(auc_ev)) {
   "curvetype"
 } else {
   NA_character_
 }
 
-if (!is.na(curve_col_auc_tr)) {
-  pr_auc_tr <- auc_tr$aucs[
-    toupper(auc_tr[[curve_col_auc_tr]]) == "PRC"
+if (!is.na(curve_col_auc_ev)) {
+  pr_auc_ev <- auc_ev$aucs[
+    toupper(auc_ev[[curve_col_auc_ev]]) == "PRC"
   ][1]
 } else {
-  pr_auc_tr <- auc_tr$aucs[1]
+  pr_auc_ev <- auc_ev$aucs[1]
 }
 
 # Bootstrap optimism correction for LASSO model
