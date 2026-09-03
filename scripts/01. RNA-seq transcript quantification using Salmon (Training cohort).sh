@@ -1,12 +1,12 @@
 # Prepare Salmon indexing
-Ensembl release 114
+# Ensembl release 114
 FASTA=Canis_lupus_familiaris.ROS_Cfam_1.0.cdna.all.fa
 
 # Session
-Salmon v1.10.2
+# Salmon v1.10.2
 
 # Salmon indexing
-salmon index -t "{$FASTA}" -i "{$INDEX_PATH}" -k 31
+salmon index -t "${FASTA}" -i "${INDEX_PATH}" -k 31
 
 # Salmon quantification
 salmon quant \
