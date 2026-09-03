@@ -28,6 +28,15 @@ available repositories as described in the manuscript.
 7. Subgroup analysis (ROC-AUC and Group distribution)
 8. Firth logistic regression (Both cohort)
 
+## Main objects
+| Object | Description |
+| --- | --- |
+| train_mat | Log2-transformed training expression matrix; genes x samples |
+| eval_mat | Evaluation microarray expression matrix; genes x samples |
+| meta_tr | Training metadata including Sample_ID, Metastasis, Grade, Histology, ER_status, Neuter_status, and Age_yrs |
+| meta_ev | Evaluation metadata including Sample_ID, LN_invasion, Grade, T_stage, and Age |
+| CMC_matrix | gcRMA-processed GSE20718 matrix with an ID_REF column |
+| file_path | Named vector of Salmon quant.sf file paths | 
 ## Software
 R version 4.4.3
 
