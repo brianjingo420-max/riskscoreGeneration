@@ -1,4 +1,4 @@
-# sessionInfo
+# Key R packages included in the workflow
 R version 4.4.3
 GSVA (version 2.0.7)
 glmnet (version 4.1.10)
