@@ -14,6 +14,8 @@ sel7 <- c(
 
 X_tr <- t(z_train[sel7, train_common, drop=FALSE])
 
+X_ev <- t(z_eval[sel7, eval_common, drop=FALSE])
+
 # ML setting
 B <- 100
 K <- 5
