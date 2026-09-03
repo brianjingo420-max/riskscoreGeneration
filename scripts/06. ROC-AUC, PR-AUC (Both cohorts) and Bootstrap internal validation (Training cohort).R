@@ -53,6 +53,55 @@ if (!is.na(curve_col_auc_tr)) {
 }
 
 ## Same workflow as above is repeated for evaluation cohort
+# apparent ROC-AUC calculation
+lp_val <- as.numeric(predict(final_fit1, newx=X_ev, type="link"))
+
+roc_obj_tr <- roc(y_tr, lp_tr)
+app_auc_tr <- as.numeric(pROC::auc(roc_obj_tr))
+ci_ROC_tr <- pROC::ci.auc(roc_obj_tr)
+
+# PR-AUC calculation
+df_pr_tr <- data.frame(
+  score=as.numeric(lp_tr),
+  label=as.integer(y_tr)
+) %>%
+  filter(
+  !is.na(score),
+  !is.na(label)
+)
+
+score_tr <- df_pr_tr$score
+y_pr_tr <- df_pr_tr$label
+pr_baseline_tr <- mean(y_pr_tr==1)
+
+# PR curve
+mm_tr <- mmdata(
+  scores = score_tr,
+  labels = y_pr_tr,
+  modnames="Transcriptomic risk score"
+)
+
+ev_tr <- evalmod(
+  mm_tr,
+  mode = "prc"
+)
+
+auc_tr <- as.data.frame(precrec::auc(ev_tr))
+curve_col_auc_tr <- if ("curvetypes" %in% names(auc_tr)) {
+  "curvetypes"
+} else if ("curvetype" %in% names(auc_tr)) {
+  "curvetype"
+} else {
+  NA_character_
+}
+
+if (!is.na(curve_col_auc_tr)) {
+  pr_auc_tr <- auc_tr$aucs[
+    toupper(auc_tr[[curve_col_auc_tr]]) == "PRC"
+  ][1]
+} else {
+  pr_auc_tr <- auc_tr$aucs[1]
+}
 
 # Bootstrap optimism correction for LASSO model
 # Conditional on 7 curated gene-set predictors
