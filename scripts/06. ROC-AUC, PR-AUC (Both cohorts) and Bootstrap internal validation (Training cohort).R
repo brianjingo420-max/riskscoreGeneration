@@ -82,7 +82,7 @@ ALPHA <- 1
 LAMBDA_MIN_RATIO <- 0.01
 TYPE_MEASURE <- "deviance"
 GLMNET_STANDARDIZE <- TRUE
-SEED <- 20262026
+SEED <- 20260910
 
 # 2. Fold generation
 make_stratified_folds <- function(y, K=5, seed=NULL) {
