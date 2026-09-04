@@ -1,4 +1,6 @@
 library(GSVA)
+library(msigdbr)
+library(purrr)
 
 Hallmark <- msigdbr(species="Homo sapiens", category="H") %>%
   split(x=.$gene_symbol, f=.$gs_name)
