@@ -57,7 +57,7 @@ z_eval <- t(scale(t(raw_eval_common)))
                             
 #
 meta_ev  # Metadata of Evaluation cohort
-group_ev <- ifelse(meta_ev$Metastasis == 1, "Invasion", "No invasion")
+group_ev <- ifelse(meta_ev$LN_invasion == 1, "Invasion", "No invasion")
 names(group_ev) <- colnames(eval_mat)
                          
 eval_common <- intersect(colnames(z_eval), names(group_ev))
