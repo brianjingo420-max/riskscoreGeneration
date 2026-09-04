@@ -5,8 +5,7 @@ library(AnnotationDbi)
 library(biomaRt)
 library(tibble)
 library(dplyr)
-library(msigdbr)
-library(purrr)
+
 
 GTF <- "ROS_Cfam_1.0.gtf"
 
