@@ -1,6 +1,7 @@
 library(GSVA)
 library(msigdbr)
 library(purrr)
+library(dplyr)
 
 Hallmark <- msigdbr(species="Homo sapiens", category="H") %>%
   split(x=.$gene_symbol, f=.$gs_name)
@@ -16,6 +17,9 @@ pathways_H25_train <- lapply(pathways_H25, function(v) intersect(v, rownames(tra
 pathways_H25_eval <- lapply(pathways_H25, function(v) intersect(v, rownames(eval_mat)))
 pathways_H25_common <- map2(pathways_H25_train, pathways_H25_eval, intersect)
 
+# For cross-platform comparability, each gene set was restricted to
+# genes available in both the training and evaluation cohorts.
+                            
 #
 param_H25_train_common <- ssgseaParam(
   exprData = train_mat,
@@ -29,6 +33,15 @@ raw_train_common <- gsva(param_H25_train_common, verbose=FALSE)
 z_train <- t(scale(t(raw_train_common)))
 
 #
+meta_tr  # Metadata of Training cohort
+group_tr <- ifelse(meta_tr$Metastasis == 1, "Invasion", "No invasion")
+names(group_tr) <- colnames(train_mat)
+                         
+train_common <- intersect(colnames(z_train), names(group_tr))
+y_tr <- as.integer(group_tr[train_common] == "Invasion")
+
+
+#
 param_H25_eval_common <- ssgseaParam(
   exprData = eval_mat,
   geneSets = pathways_H25_common,
@@ -40,15 +53,16 @@ param_H25_eval_common <- ssgseaParam(
 raw_eval_common <- gsva(param_H25_eval_common, verbose=FALSE)
 z_eval <- t(scale(t(raw_eval_common)))
 
-
+# ssGSEA scores were z-standardized independently within each cohort.
+                            
 #
-meta_tr  # Metadata of Training cohort
-group_tr <- ifelse(meta_tr$Metastasis == 1, "Invasion", "No invasion")
-names(group_tr) <- colnames(train_mat)
-
-train_common <- intersect(colnames(z_train), names(group_tr))
-y_tr <- as.integer(group_tr[train_common] == "Invasion")
-
+meta_ev  # Metadata of Evaluation cohort
+group_ev <- ifelse(meta_ev$Metastasis == 1, "Invasion", "No invasion")
+names(group_ev) <- colnames(eval_mat)
+                         
+eval_common <- intersect(colnames(z_eval), names(group_ev))
+y_ev <- as.integer(group_ev[eval_common] == "Invasion")                           
+                            
 univ_logit <- function(x, y){
   x <- as.numeric(x)
   ok <- is.finite(x) & !is.na(y)
@@ -80,6 +94,7 @@ res <- do.call(rbind, res_list_common)
 res$pathway <- rownames(res)
 rownames(res) <- NULL
 
+# BH adjustment was applied once across all tested gene sets.
 res$FDR <- p.adjust(res$p, method = "BH")
 res <- res[order(res$FDR, res$p), ]
 
