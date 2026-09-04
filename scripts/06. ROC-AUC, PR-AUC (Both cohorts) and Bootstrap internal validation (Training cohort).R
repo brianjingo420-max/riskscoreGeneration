@@ -1,6 +1,7 @@
 library(glmnet)
 library(pROC)
 library(precrec)
+library(dplyr)
 
 # apparent ROC-AUC calculation
 lp_tr <- as.numeric(predict(final_fit1, newx=X_tr, type="link"))
