@@ -8,7 +8,7 @@ library(dplyr)
 library(msigdbr)
 library(purrr)
 
-GTF <- "ROS_CFam_1.0.gtf"
+GTF <- "ROS_Cfam_1.0.gtf"
 
 # GTF loading
 txdb <- makeTxDbFromGFF(GTF, format="gtf")
@@ -20,6 +20,7 @@ tx2gene <- select(txdb, keys = k, columns = "GENEID", keytype = "TXNAME")
 # Salmon to gene-level TPM
 txi <- tximport(file_path, type = "salmon", tx2gene = tx2gene, countsFromAbundance = "lengthScaledTPM", ignoreTxVersion = TRUE)
 tpm <- txi$abundance
+# countsFromAbundance affects the count matrix but not txi$abundance.
 
 # Ensembl BioMart
 maRt <- useEnsembl(
