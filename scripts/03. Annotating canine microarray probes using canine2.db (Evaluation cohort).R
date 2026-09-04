@@ -8,6 +8,8 @@ library(tibble)
 
 # sample columns
 sample_cols2 <- setdiff(names(CMC_matrix), "ID_REF")
+# CMC_matrix is a gcRMA-normalized, log2-scale expression matrix.
+# No additional log transformation is applied here.
 
   
 # Probe IDs
@@ -18,6 +20,7 @@ probes <- probes[!is.na(probes) & probes !=""]
 dog_ensembl <- mapIds(canine2.db, keys = probes,
                       keytype = "PROBEID", column = "ENSEMBL",
                       multiVals = "first")
+# When a probe has multiple Ensembl annotations, the first mapped Ensembl gene ID is retained.
 
 dog_df <- data.frame(
   ID_REF = names(dog_ensembl),
