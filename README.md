@@ -4,6 +4,10 @@ This repository contains the analysis code associated with the manuscript:
 "Primary tumor transcriptomic signature is associated with
 locoregional lymphatic spread in canine mammary carcinoma"
 
+These scripts document the principal analytical procedures used in the study and are not intended as
+a fully automated end-to-end pipeline. Some scripts assume that the expression matrices and clinical
+metadata described below have already been loaded.
+
 ## Data
 GEO accession number \
 Training cohort:
@@ -12,8 +16,8 @@ GSE119810
 Evaluation cohort:
 GSE20718
 
-Raw and processed expression data were obtained from publicly
-available repositories as described in the manuscript.
+The evaluation-cohort scripts assume that CMC_matrix, a gcRMA-normalized expression matrix
+generated from the GSE20718 CEL files, has already been loaded.
 
 ## Analysis workflow
 
