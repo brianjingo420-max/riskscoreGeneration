@@ -55,9 +55,7 @@ eval_df <- CMC_matrix %>%
 # Collapsing multiple probes to human gene symbol by median
 eval_df_med <- eval_df %>%
     group_by(hsapiens_homolog_associated_gene_name) %>%
-    summarise(across(all_of(sample_cols2), median, na.rm = TRUE), .groups="drop"),
-             
-  )
+    summarise(across(all_of(sample_cols2), median, na.rm = TRUE), .groups="drop")
 
 # Final matrix
 eval_mat <- eval_df_med %>%
