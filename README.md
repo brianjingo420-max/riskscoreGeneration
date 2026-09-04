@@ -22,11 +22,11 @@ available repositories as described in the manuscript.
   Canis lupus familiaris ROS_Cfam_1.0 cdna FASTA.
 2. Gene-level summarization using tximport (Training cohort)
 3. Annotating canine microarray probes using canine2.db (Evaluation cohort)
-4. ssGSEA (Both cohort) and Univariable gene-set screening (Training cohort)
+4. ssGSEA (Both cohorts) and Univariable gene-set screening (Training cohort)
 5. LASSO model development (Training cohort)
-6. ROC-AUC, PR-AUC (Both cohort) and Bootstrap internal validation (Training cohort)
+6. ROC-AUC, PR-AUC (Both cohorts) and Bootstrap internal validation (Training cohort)
 7. Subgroup analysis (ROC-AUC and Group distribution)
-8. Firth logistic regression (Both cohort)
+8. Firth logistic regression (Both cohorts)
 
 ## Main objects
 | Object | Description |
