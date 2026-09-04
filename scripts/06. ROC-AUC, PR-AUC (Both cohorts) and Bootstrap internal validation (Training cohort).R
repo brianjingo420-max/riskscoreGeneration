@@ -7,7 +7,7 @@ lp_tr <- as.numeric(predict(final_fit1, newx=X_tr, type="link"))
 
 roc_obj_tr <- roc(y_tr, lp_tr)
 app_auc_tr <- as.numeric(pROC::auc(roc_obj_tr))
-ci_ROC_tr <- pROC::ci.auc(roc_obj_tr)
+ci_auc_tr <- pROC::ci.auc(roc_obj_tr)
 
 # PR-AUC calculation
 df_pr_tr <- data.frame(
@@ -58,7 +58,7 @@ lp_ev <- as.numeric(predict(final_fit1, newx=X_ev, type="link"))
 
 roc_obj_ev <- roc(y_ev, lp_ev)
 ROC_auc_ev <- as.numeric(pROC::auc(roc_obj_ev))
-ci_ROC_ev <- pROC::ci.auc(roc_obj_ev)
+ci_auc_ev <- pROC::ci.auc(roc_obj_ev)
 
 # PR-AUC calculation
 df_pr_ev <- data.frame(
