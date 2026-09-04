@@ -1,4 +1,4 @@
-# Firth logist regression
+# Firth logistic regression
 library(logistf)
 df_train_model <- data.frame(
   Sample_ID = meta_tr$Sample_ID,
@@ -18,11 +18,13 @@ df_train_model <- df_train_model %>%
       labels=c("Grade 1-2", "Grade 3")
     ),
 
-    ER=factor(ER),
-    Neuter=factor(Neuter)
+    ER=factor(ER, levels = c("Negative", "Positive")),
+    Neuter=factor(Neuter, levels = c("Intact", "Neutered"))
   )
 
-# complete-case subset
+# A complete-case subset was used for all models within each
+# cohort to maintain the same sample size across adjustment specifications.
+
 df_train_cc <- df_train_model %>%
   filter(
     complete.cases(
@@ -37,7 +39,7 @@ df_train_cc <- df_train_model %>%
 
 # 
 df_eval_model <- data.frame(
-  meta_ev$Sample_ID,
+  Sample_ID = meta_ev$Sample_ID,
   Outcome = as.integer(y_ev),
   RS = as.numeric(lp_ev),
   Grade = meta_ev$Grade,
@@ -50,8 +52,9 @@ df_eval_model <- df_eval_model %>%
     Grade3 = factor(
       ifelse(Grade==3,1,0),
       levels=c(0,1),
-      labels=c("Grade2","Grade3")
+      labels=c("Grade 2","Grade 3")
       )
+    Tstage = factor(Tstage)
     )
 
 df_eval_cc <- df_eval_model %>%
@@ -94,8 +97,7 @@ extract_rs <- function(fit, cohort, adjustment, n, events) {
   )
 }
 
-#
-
+# Training cohort
 fit_tr_0 <- logistf(
   Outcome ~ RS,
   data=df_train_cc
@@ -126,7 +128,7 @@ fit_tr_full <- logistf(
   data=df_train_cc
 )
 
-#Eval 모델
+# Evaluation-cohort
 fit_ev_0 <- logistf(
   Outcome ~ RS,
   data = df_eval_cc
@@ -152,7 +154,7 @@ fit_ev_full <- logistf(
   data = df_eval_cc
 )
 
-#한 표로 합치기
+# 
 n_tr <- nrow(df_train_cc)
 e_tr <- sum(df_train_cc$Outcome == 1)
 
@@ -241,7 +243,7 @@ rs_table <- bind_rows(
   )
 )
 
-#논문용 숫자 형태로 정리
+# Format results for the manuscript table
 rs_table_final <- rs_table %>%
   mutate(
    
