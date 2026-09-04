@@ -9,12 +9,9 @@ a fully automated end-to-end pipeline. Some scripts assume that the expression m
 metadata described below have already been loaded.
 
 ## Data
-GEO accession number \
-Training cohort:
-GSE119810
-
-Evaluation cohort:
-GSE20718
+GEO accession number 
+- Training cohort: GSE119810
+- Evaluation cohort: GSE20718
 
 The evaluation-cohort scripts assume that CMC_matrix, a gcRMA-normalized expression matrix
 generated from the GSE20718 CEL files, has already been loaded.
@@ -41,6 +38,7 @@ generated from the GSE20718 CEL files, has already been loaded.
 | meta_ev | Evaluation metadata including Sample_ID, LN_invasion, Grade, T_stage, and Age_yrs |
 | CMC_matrix | gcRMA-processed GSE20718 matrix with an ID_REF column |
 | file_path | Named vector of Salmon quant.sf file paths | 
+
 ## Software
 R version 4.4.3
 
