@@ -34,7 +34,7 @@ available repositories as described in the manuscript.
 | train_mat | Log2-transformed training expression matrix; genes x samples |
 | eval_mat | Evaluation microarray expression matrix; genes x samples |
 | meta_tr | Training metadata including Sample_ID, Metastasis, Grade, Histology, ER_status, Neuter_status, and Age_yrs |
-| meta_ev | Evaluation metadata including Sample_ID, LN_invasion, Grade, T_stage, and Age |
+| meta_ev | Evaluation metadata including Sample_ID, LN_invasion, Grade, T_stage, and Age_yrs |
 | CMC_matrix | gcRMA-processed GSE20718 matrix with an ID_REF column |
 | file_path | Named vector of Salmon quant.sf file paths | 
 ## Software
