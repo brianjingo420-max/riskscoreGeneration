@@ -1,4 +1,9 @@
 library(rstatix)
+
+# The overall training-cohort comparison is reported using a raw P value.
+# BH adjustment is applied only across the three training-cohort
+# sensitivity analyses: simple carcinoma, grade 2-3, and grade 3.
+
 #1. Subgroup analysis
   ## A. Grade 2-3
   idx_g23 <- meta_tr$Grade %in% c(2,3)
@@ -194,3 +199,5 @@ library(rstatix)
       xmin=1,
       xmax=2
     )
+
+# Same workflow is done for evaluation cohort, all tumors and grade 3 tumors.
