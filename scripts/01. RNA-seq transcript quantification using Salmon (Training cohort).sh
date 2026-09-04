@@ -1,6 +1,6 @@
 # Prepare Salmon indexing
-# INDEX_PATH = "/path/to/salmon_index"
-# OUTPUT_DIR = "/path/to/salmon_output/sample01"
+# INDEX_PATH="/path/to/salmon_index"
+# OUTPUT_DIR="/path/to/salmon_output/sample01"
 
 # Ensembl release 114
 FASTA=Canis_lupus_familiaris.ROS_Cfam_1.0.cdna.all.fa
