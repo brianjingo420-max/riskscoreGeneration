@@ -53,7 +53,7 @@ df_eval_model <- df_eval_model %>%
       ifelse(Grade==3,1,0),
       levels=c(0,1),
       labels=c("Grade 2","Grade 3")
-      )
+      ),
     Tstage = factor(Tstage)
     )
 
