@@ -41,6 +41,7 @@ map_df <- getBM(
     values = unique(dog_df$ensembl_gene_id),
     mart = maRt
     )
+# maRt was initialized in Script 02 using Ensembl release 114.
 
 map_df <- map_df %>%
   filter(
