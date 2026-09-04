@@ -3,6 +3,8 @@
 library(canine2.db)
 library(AnnotationDbi)
 library(biomaRt)
+library(dplyr)
+library(tibble)
 
 # sample columns
 sample_cols2 <- setdiff(names(CMC_matrix), "ID_REF")
