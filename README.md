@@ -44,4 +44,4 @@ generated from the GSE20718 CEL files, has already been loaded.
 ## Software
 R version 4.4.3
 
-package versions are provided in sessinoInfo.txt.
+package versions are provided in sessionInfo.txt.
