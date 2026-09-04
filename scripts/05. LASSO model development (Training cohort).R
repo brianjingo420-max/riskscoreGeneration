@@ -59,13 +59,8 @@ cv1 <- cv.glmnet(
   idx <-b + 1
   cv1_list[[idx]] <- cv1
   lam1[idx] <- cv1$lambda.1se
-  lammin1[idx] <- cv1$lambda.min
 
   coef1 <- as.matrix(coef(cv1, s = "lambda.1se"))
-  sel1[[idx]] <- setdiff(
-    rownames(coef1)[coef1[, 1] != 0],
-    "(Intercept)"
-  )
 
   b <- b + 1
 }
