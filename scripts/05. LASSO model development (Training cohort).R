@@ -70,7 +70,7 @@ cv1 <- cv.glmnet(
   b <- b + 1
 }
 
-# representative selection by minimizing the residual
+# Select the repeated-CV run whose lambda.1se is closest to the median lambda.1se on the log scale.
 median_log_lam1 <- median(log(lam1))
 
 representative_idx1 <- which.min(
