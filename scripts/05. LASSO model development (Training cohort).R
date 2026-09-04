@@ -14,6 +14,8 @@ sel7 <- c(
 
 X_tr <- t(z_train[sel7, train_common, drop=FALSE])
 
+# Evaluation-cohort predictors are prepared in the same order as the training predictors.
+# Evaluation outcomes are used for AUC calculation in Script 06, not for model fitting.
 X_ev <- t(z_eval[sel7, eval_common, drop=FALSE])
 
 # ML setting
