@@ -1,5 +1,7 @@
-# Firth logistic regression
 library(logistf)
+library(dplyr)
+
+# Firth logistic regression
 df_train_model <- data.frame(
   Sample_ID = meta_tr$Sample_ID,
   Outcome = as.integer(y_tr),
