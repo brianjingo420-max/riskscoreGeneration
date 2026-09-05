@@ -2,7 +2,7 @@
 This repository contains the analysis code associated with the manuscript:
 
 "Primary tumor transcriptomic signature is associated with
-locoregional lymphatic spread in canine mammary carcinoma"
+locoregional dissemination in canine mammary carcinoma"
 
 These scripts document the principal analytical procedures used in the study and are not intended as
 a fully automated end-to-end pipeline. Some scripts assume that the expression matrices and clinical
